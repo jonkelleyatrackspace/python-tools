@@ -143,7 +143,7 @@ def main(processid,triggeraction,memorythreshold,killsignal,sigkilltimeout,sigki
             sys.exit(0)
         else:
             if ismemoryover(processid,memorythreshold):
-                logger.info('Process %s heap has exceeded %s' % (str(processid),str(memorythreshold)) )
+                logger.error('Process %s heap has exceeded %s' % (str(processid),str(memorythreshold)) )
                 # If we want to kill...
                 if triggeraction == 'kill' or triggeraction == 'killthenexec':
                     logger.info('Process %s scheduled for death' % (str(processid)))
