@@ -21,7 +21,8 @@ formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.DEBUG)
-logger.info('JKoom Watchdog Startup')
+logger.info('** WATCHDOG START **')
+
 
 import commands # Runs commands.
 from optparse import OptionParser # guess
