@@ -16,7 +16,7 @@ import signal, os, sys
 import time # time.sleep()
 import logging
 logger = logging.getLogger('myapp')
-hdlr = logging.FileHandler('/tmp/myapp.log')
+hdlr = logging.FileHandler('/var/log/jkoom.py.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
