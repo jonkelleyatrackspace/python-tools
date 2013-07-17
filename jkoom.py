@@ -32,12 +32,6 @@ def signalprocess(pid,ksignal):
         >> signalprocess(pid,"SIGTERM")
         >> signalprocess(pid,15)
     """
-
-    if not pid:
-        raise Exception('No pid defined for killsignal()')
-
-    # Sends a kill signal to a process and send a kill -9 if it takes too long.
-
     #  From the manpages.
     #       Signal     Value     Action   Comment
     #       -------------------------------------------------------------------------
@@ -62,6 +56,8 @@ def signalprocess(pid,ksignal):
     #       SIGTTIN   21,21,26    Stop    tty input for background process
     #       SIGTTOU   22,22,27    Stop    tty output for background process
 
+    if not pid:
+        raise Exception('No pid defined for killsignal()')
 
     if type(ksignal) is str:
         if ksignal.lower() == 'SIGHUP':		ksignal = signal.SIGHUP # value 1
@@ -106,6 +102,7 @@ def thenexec(command):
         logger.error('Exec failed with exit code %s   Output:' % (str(exitcode), str(stdout)))
     else:
         logger.info('Exec success.   Output: %s' % (str(stdout)))
+
 def ismemoryover(pid,kilomax):
     """  If process memory footprint is over a kilobyte range this function returns true.
             i.e.
@@ -128,9 +125,8 @@ def ismemoryover(pid,kilomax):
         return True
 
 def main(processid,triggeraction,memorythreshold,killsignal,sigkilltimeout,sigkilltimeoutsignal,killscript,loopspeed):
-    import time
-    """ A demo daemon main routine, write a datestamp to 
-        /tmp/daemon-log every 10 seconds.
+    """ This is the function that actually does the heavy logic
+    and loops. Forever.
     """
     processid = int(processid)
     memorythreshold = int(memorythreshold)
@@ -147,7 +143,7 @@ def main(processid,triggeraction,memorythreshold,killsignal,sigkilltimeout,sigki
             sys.exit(0)
         else:
             if ismemoryover(processid,memorythreshold):
-                logger.info('Process %s heap has exceeded %s' % (str(processid),str(memorythreshold)) )
+                logger.error('Process %s heap has exceeded %s' % (str(processid),str(memorythreshold)) )
                 # If we want to kill...
                 if triggeraction == 'kill' or triggeraction == 'killthenexec':
                     logger.info('Process %s scheduled for death' % (str(processid)))
@@ -182,6 +178,9 @@ def main(processid,triggeraction,memorythreshold,killsignal,sigkilltimeout,sigki
 
 
 if __name__ == "__main__":
+    """ Parser magic.
+    Forking magic.
+    """
     # do the parser magic first.
     parser = OptionParser()
     parser.add_option("-p", "--pid", dest="processid",
@@ -259,6 +258,8 @@ if __name__ == "__main__":
 
     # start the daemon main loop
     logger.debug('Forked()')
+    
+    # call main
     main(options.processid,options.triggeraction,
     options.memorythreshold,options.killsignal,
     options.sigkilltimeout,options.sigkilltimeoutsignal,
