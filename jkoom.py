@@ -194,7 +194,7 @@ if __name__ == "__main__":
                         help="If triggeraction kill, what signal to try kill with?", metavar="signal")
     parser.add_option("--sigkill-timeout", dest="sigkilltimeout", default=0,
                         help="If triggeraction kill, what timeout to wait for process death before force signal?", metavar="timeperiod")
-    parser.add_option("--sigkill-timeout-sigal", dest="sigkilltimeoutsignal", default=9,
+    parser.add_option("--sigkill-timeout-signal", dest="sigkilltimeoutsignal", default=9,
                         help="Reassign default sigkill from 9 to another number.", metavar="signal")
     parser.add_option("--killscript", dest="killscript",
                         help="If triggeraction kill, what timeout to wait for process death before signal 9?", metavar="timeperiod")
@@ -221,7 +221,7 @@ if __name__ == "__main__":
 
     if options.sigkilltimeout > 0:
             if not options.sigkilltimeoutsignal:
-                print "Needs --sigkill-timeout-sigal 9 or something to know what to use when the timeout is met."
+                print "Needs --sigkill-timeout-signal 9 or something to know what to use when the timeout is met."
                 sys.exit(1)
 
     if options.triggeraction == 'exec' or options.triggeraction == 'killthenexec':
