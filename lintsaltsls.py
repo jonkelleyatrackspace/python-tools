@@ -77,6 +77,8 @@ parser = argparse.ArgumentParser(description='This program will search for file 
 
 parser.add_argument('-r', '-R', '--recursive', action='store_true',
                     help='Search with recursivity.', default=False, required=False)
+parser.add_argument('-q', '--quiet', action='store_true', help='Quiet -- only output failures.', default=False, required=False)
+parser.add_argument('-s', '--silent',  action='store_true', help='Silent -- output nothing.', default=False, required=False)
 parser.add_argument('directory', nargs='?')
 
 
@@ -107,7 +109,7 @@ def readFromFile(inputfile):
 
     return ''.join(pureyaml)
 
-def yamlSanityCheck(filei,inputstr):
+def yamlSanityCheck(filei,inputstr,quiet,silent):
     """ This will take a single file path and open it with
         yaml parser, and exceptions will be thrown if the yaml
         file is insane.
@@ -117,14 +119,21 @@ def yamlSanityCheck(filei,inputstr):
         else an exceptions
         """
     if os.path.basename(filei) == "nodes.sls":
-        print bcolors.OKBLUE + "[ SKIP ]   " + bcolors.ENDC + filei
+        if quiet or silent:
+            pass
+        else:
+            print bcolors.OKBLUE + "[ SKIP ]   " + bcolors.ENDC + filei
     else:
         try:
             # load( open(inputfile, 'r'), Loader=Loader)
             load(inputstr, Loader=Loader)
-            print bcolors.OKGREEN + "[  OK  ]   " + bcolors.ENDC + filei
+            if quiet or silent:
+                pass
+            else:
+                print bcolors.OKGREEN + "[  OK  ]   " + bcolors.ENDC + filei
         except Exception, trace:
-            sys.stderr.write(bcolors.FAIL + "[ FAIL ]   " + 
+            if not silent:
+                sys.stderr.write(bcolors.FAIL + "[ FAIL ]   " + 
                              bcolors.ENDC + filei + 
                              "\nException: " + str(trace) + "\n")
             return False
@@ -156,18 +165,17 @@ def main():
 
     # Arg parsing...
     path = args['directory']
-    try:
-        (directory, pattern) = os.path.split(args['directory'])
-    except AttributeError:
-        raise AttributeError("Missing last arguement?")
+    (directory, pattern) = os.path.split(args['directory'])
     if pattern == '':
         pattern = '*'
     recurse = args['recursive']
+    quiet_bit = args['quiet']
+    silent_bit = args['silent']
 
     # WHERES THE LINT
     exitvalue = 0
     for dafile in findFiles(recurse=recurse,directory=directory,pattern=pattern):
-        if not yamlSanityCheck(dafile,readFromFile(dafile)):
+        if not yamlSanityCheck(filei=dafile,inputstr=readFromFile(dafile),quiet=quiet_bit,silent=silent_bit):
             exitvalue = 255
 
     sys.exit(exitvalue)
