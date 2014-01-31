@@ -2,8 +2,10 @@
 # --------------------
 # Jan 31, 2014
 #
-# Description:          This is a yaml linter which validates the path to a yaml file,
-#                       a directory full of yaml files, or a recursive search of yaml files.
+# Description:          This is a sls/yaml linter which validates the path to a sls/yaml file,
+#                       a directory full of sls/yaml files, or a recursive search of yaml files.
+# Target Audiance:      To those who use salt and manage salt.sls files, to ensure a strict yaml
+#                       syntax.
 # Usage     :
 #           - Check a single file:
 #             python /home/jon/blah.py '/tmp/path/to/file.yaml'
@@ -12,7 +14,52 @@
 #           - Recursively heck a whole directories YAML files
 #             python /home/jon/blah.py -r '/tmp/*.yaml'
 
-from yaml import load
+# Output example:
+# jon@epoch2 /tmp/python-tools $ python /tmp/python-tools/lintsaltsls.py -R /tmp/chunky-salt/*.sls
+# [  OK  ]   /tmp/chunky-salt/pillar/env.sls
+# [  OK  ]   /tmp/chunky-salt/pillar/top.sls
+# [  OK  ]   /tmp/chunky-salt/pillar/region.sls
+# [ FAIL ]   /tmp/chunky-salt/pillar/nodes.sls
+# Exception: while parsing a block mapping
+#   in "<string>", line 1, column 1:
+#     nodes:
+#     ^
+# expected <block end>, but found '-'
+#   in "<string>", line 5, column 1:
+#     - name: cache-n01.staging.inova. ... 
+#     ^
+# [  OK  ]   /tmp/chunky-salt/pillar/users.sls
+# [  OK  ]   /tmp/chunky-salt/modules/top.sls
+# [  OK  ]   /tmp/chunky-salt/modules/roles/lb_server/init.sls
+# [  OK  ]   /tmp/chunky-salt/modules/roles/lb_server/nginx.sls
+# [  OK  ]   /tmp/chunky-salt/modules/roles/cache_server/init.sls
+# [  OK  ]   /tmp/chunky-salt/modules/roles/cache_server/memcached.sls
+# [  OK  ]   /tmp/chunky-salt/modules/roles/salt_server/salt_server.sls
+# [  OK  ]   /tmp/chunky-salt/modules/roles/salt_server/init.sls
+# [  OK  ]   /tmp/chunky-salt/modules/roles/chunky_server/mongo.sls
+
+# ===============================================
+# Common Error Causes:
+# Exception: while scanning a simple key
+#  in "<string>", line 64, column 1:
+#    pkg.installed
+# --
+# Problem:
+#  apache:
+#    pkg.installed
+# (NOT VALID YAML)
+# Solution:
+#  apache:
+#    pkg:
+#      - installed
+#    service:
+#      - running
+#      - watch:
+#        - pkg: apache
+#        - file: /etc/httpd/conf/httpd.conf
+#        - user: apache
+# --
+
 from yaml import load
 try:
     from yaml import CLoader as Loader, CDumper as Dumper  # pyaml rocks
@@ -34,7 +81,6 @@ parser.add_argument('directory', nargs='?')
 
 
 class bcolors:
-
     """ Ansi color hax """
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
