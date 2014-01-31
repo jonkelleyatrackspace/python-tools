@@ -35,7 +35,7 @@ parser.add_argument('directory', nargs='?')
 
 class bcolors:
 
-	""" Ansi color hax """
+    """ Ansi color hax """
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
     FAIL = '\033[91m'
@@ -43,11 +43,11 @@ class bcolors:
 
 
 def readFromFile(inputfile):
-	""" Returns a string from a file, less specific lines,
-	    used to filter out salt JINJA macros. i.e.:
-	    {  starting on a line defines something
-	    {{ }} keys with this are usually variables
-	"""
+    """ Returns a string from a file, less specific lines,
+        used to filter out salt JINJA macros. i.e.:
+        {  starting on a line defines something
+        {{ }} keys with this are usually variables
+    """
     pureyaml = []
     with open(inputfile, "r") as f:         
         for line in f.readlines():
@@ -57,71 +57,71 @@ def readFromFile(inputfile):
             elif "{{" in li and '}}' in li:
                pass
             else:
-            	pureyaml.append(li)
+                pureyaml.append(li)
 
     return ''.join(pureyaml)
 
 def yamlSanityCheck(filei,inputstr):
-	""" This will take a single file path and open it with
-	    yaml parser, and exceptions will be thrown if the yaml
-	    file is insane.
+    """ This will take a single file path and open it with
+        yaml parser, and exceptions will be thrown if the yaml
+        file is insane.
 
-	    >> yamlSyntaxCheck('/tmp/file.yml')
-	    << Return: True (if no errors)
-	    else an exceptions
-	    """
-	try:
-		# load( open(inputfile, 'r'), Loader=Loader)
-		load(inputstr, Loader=Loader)
-	except Exception, trace:
-		sys.stderr.write(bcolors.FAIL + "[ FAIL ]   " + 
-						 bcolors.ENDC + filei + 
-						 "\nException: " + str(trace) + "\n")
-		return False
+        >> yamlSyntaxCheck('/tmp/file.yml')
+        << Return: True (if no errors)
+        else an exceptions
+        """
+    try:
+        # load( open(inputfile, 'r'), Loader=Loader)
+        load(inputstr, Loader=Loader)
+    except Exception, trace:
+        sys.stderr.write(bcolors.FAIL + "[ FAIL ]   " + 
+                         bcolors.ENDC + filei + 
+                         "\nException: " + str(trace) + "\n")
+        return False
 
-	print bcolors.OKGREEN + "[  OK  ]   " + bcolors.ENDC + filei
-	return True
+    print bcolors.OKGREEN + "[  OK  ]   " + bcolors.ENDC + filei
+    return True
 
 def findFiles(directory, pattern, recurse):
-	""" This will take a directory and a pattern to search for, and will find all files
-	    matching a pattern in that directory. It will recurse into sub directories if recurse=True
-	    """
-	""" I cant figure out list comprehension for if recurse == true, so performance will suffer. """
-	matches = []
-	if recurse:
-		for root, dirs, files in os.walk(directory):
-			for basename in files:
-				if fnmatch.fnmatch(basename, pattern):
-					filename = os.path.join(root, basename)
-					matches.append(filename)
-	else:
-		# matches = directory + [fn for fn in os.listdir(directory) if fnmatch.fnmatch(fn, pattern)]
-		for fn in os.listdir(directory):
-			if fnmatch.fnmatch(fn, pattern) and not os.path.isdir(fn):
-				matches.append(directory + "/" + fn)
-	return matches
+    """ This will take a directory and a pattern to search for, and will find all files
+        matching a pattern in that directory. It will recurse into sub directories if recurse=True
+        """
+    """ I cant figure out list comprehension for if recurse == true, so performance will suffer. """
+    matches = []
+    if recurse:
+        for root, dirs, files in os.walk(directory):
+            for basename in files:
+                if fnmatch.fnmatch(basename, pattern):
+                    filename = os.path.join(root, basename)
+                    matches.append(filename)
+    else:
+        # matches = directory + [fn for fn in os.listdir(directory) if fnmatch.fnmatch(fn, pattern)]
+        for fn in os.listdir(directory):
+            if fnmatch.fnmatch(fn, pattern) and not os.path.isdir(fn):
+                matches.append(directory + "/" + fn)
+    return matches
 
 def main():
-	""" Guess what this does """
-	args = vars(parser.parse_args())
+    """ Guess what this does """
+    args = vars(parser.parse_args())
 
-	# Arg parsing...
-	path = args['directory']
-	try:
-		(directory, pattern) = os.path.split(args['directory'])
-	except AttributeError:
-		raise AttributeError("Missing last arguement?")
-	if pattern == '':
-		pattern = '*'
-	recurse = args['recursive']
+    # Arg parsing...
+    path = args['directory']
+    try:
+        (directory, pattern) = os.path.split(args['directory'])
+    except AttributeError:
+        raise AttributeError("Missing last arguement?")
+    if pattern == '':
+        pattern = '*'
+    recurse = args['recursive']
 
-	# WHERES THE LINT
-	exitvalue = 0
-	for dafile in findFiles(recurse=recurse,directory=directory,pattern=pattern):
-		if not yamlSanityCheck(dafile,readFromFile(dafile)):
-			exitvalue = 255
+    # WHERES THE LINT
+    exitvalue = 0
+    for dafile in findFiles(recurse=recurse,directory=directory,pattern=pattern):
+        if not yamlSanityCheck(dafile,readFromFile(dafile)):
+            exitvalue = 255
 
-	sys.exit(exitvalue)
+    sys.exit(exitvalue)
 
 if __name__ == "__main__":
-	main()
+    main()
