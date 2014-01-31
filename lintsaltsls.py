@@ -116,16 +116,19 @@ def yamlSanityCheck(filei,inputstr):
         << Return: True (if no errors)
         else an exceptions
         """
-    try:
-        # load( open(inputfile, 'r'), Loader=Loader)
-        load(inputstr, Loader=Loader)
-    except Exception, trace:
-        sys.stderr.write(bcolors.FAIL + "[ FAIL ]   " + 
-                         bcolors.ENDC + filei + 
-                         "\nException: " + str(trace) + "\n")
-        return False
+    if os.path.basename(filei) == "nodes.sls":
+        print bcolors.OKBLUE + "[ SKIP ]   " + bcolors.ENDC + filei
+    else:
+        try:
+            # load( open(inputfile, 'r'), Loader=Loader)
+            load(inputstr, Loader=Loader)
+            print bcolors.OKGREEN + "[  OK  ]   " + bcolors.ENDC + filei
+        except Exception, trace:
+            sys.stderr.write(bcolors.FAIL + "[ FAIL ]   " + 
+                             bcolors.ENDC + filei + 
+                             "\nException: " + str(trace) + "\n")
+            return False
 
-    print bcolors.OKGREEN + "[  OK  ]   " + bcolors.ENDC + filei
     return True
 
 def findFiles(directory, pattern, recurse):
