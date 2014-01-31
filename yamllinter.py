@@ -1,5 +1,4 @@
 #!/usr/bin/env python2
-# this doesnt work yet
 # Jan 31, 2014
 
 # Description:          This is a yaml linter which validates the path to a yaml file,
@@ -21,8 +20,7 @@ except ImportError:
 
 import sys, os, fnmatch
 import argparse
-print "this doesnt work yet"
-sys.exit(0)
+
 parser = argparse.ArgumentParser(description='This program will search for file or files in a' + 
                                              ' directory that are specified as yaml, and then' +
                                              ' validates them using the yaml library.')
@@ -42,8 +40,13 @@ def readFromFile(inputfile):
     with open(inputfile, "r") as f:         
         for line in f.readlines():
             li=line.lstrip()
-            if not li.startswith('{'):
+            if li.startswith('{'):
+                pass
+            elif "{{" in li and '}}' in li:
+               pass
+            else:
             	pureyaml.append(li)
+
     return ''.join(pureyaml)
 
 def yamlSanityCheck(filei,inputstr):
