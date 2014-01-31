@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
+# --------------------
 # Jan 31, 2014
-
+#
 # Description:          This is a yaml linter which validates the path to a yaml file,
 #                       a directory full of yaml files, or a recursive search of yaml files.
 # Usage     :
@@ -14,9 +15,9 @@
 from yaml import load
 from yaml import load
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CLoader as Loader, CDumper as Dumper # pyaml rocks
 except ImportError:
-    from yaml import Loader, Dumper
+    from yaml import Loader, Dumper # stdlib yaml meh.
 
 import sys, os, fnmatch
 import argparse
@@ -29,6 +30,7 @@ parser.add_argument('-r','-R','--recursive', action='store_true', help='Search w
 parser.add_argument('directory', nargs='?')
 
 class bcolors:
+	""" Ansi color hax """
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
     FAIL = '\033[91m'
@@ -36,6 +38,11 @@ class bcolors:
 
 
 def readFromFile(inputfile):
+	""" Returns a string from a file, less specific lines,
+	    used to filter out salt JINJA macros. i.e.:
+	    {  starting on a line defines something
+	    {{ }} keys with this are usually variables
+	"""
     pureyaml = []
     with open(inputfile, "r") as f:         
         for line in f.readlines():
@@ -71,6 +78,9 @@ def yamlSanityCheck(filei,inputstr):
 	return True
 
 def findFiles(directory, pattern, recurse):
+	""" This will take a directory and a pattern to search for, and will find all files
+	    matching a pattern in that directory. It will recurse into sub directories if recurse=True
+	    """
 	""" I cant figure out list comprehension for if recurse == true, so performance will suffer. """
 	matches = []
 	if recurse:
@@ -87,6 +97,7 @@ def findFiles(directory, pattern, recurse):
 	return matches
 
 def main():
+	""" Guess what this does """
 	args = vars(parser.parse_args())
 
 	# Arg parsing...
