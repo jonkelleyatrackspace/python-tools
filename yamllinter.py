@@ -15,21 +15,26 @@
 from yaml import load
 from yaml import load
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper # pyaml rocks
+    from yaml import CLoader as Loader, CDumper as Dumper  # pyaml rocks
 except ImportError:
-    from yaml import Loader, Dumper # stdlib yaml meh.
+    from yaml import Loader, Dumper  # stdlib yaml meh.
 
-import sys, os, fnmatch
+import sys
+import os
+import fnmatch
 import argparse
 
-parser = argparse.ArgumentParser(description='This program will search for file or files in a' + 
+parser = argparse.ArgumentParser(description='This program will search for file or files in a' +
                                              ' directory that are specified as yaml, and then' +
                                              ' validates them using the yaml library.')
 
-parser.add_argument('-r','-R','--recursive', action='store_true', help='Search with recursivity.', default=False, required=False)
+parser.add_argument('-r', '-R', '--recursive', action='store_true',
+                    help='Search with recursivity.', default=False, required=False)
 parser.add_argument('directory', nargs='?')
 
+
 class bcolors:
+
 	""" Ansi color hax """
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
@@ -66,7 +71,7 @@ def yamlSanityCheck(filei,inputstr):
 	    else an exceptions
 	    """
 	try:
-		#load( open(inputfile, 'r'), Loader=Loader)
+		# load( open(inputfile, 'r'), Loader=Loader)
 		load(inputstr, Loader=Loader)
 	except Exception, trace:
 		sys.stderr.write(bcolors.FAIL + "[ FAIL ]   " + 
@@ -90,7 +95,7 @@ def findFiles(directory, pattern, recurse):
 					filename = os.path.join(root, basename)
 					matches.append(filename)
 	else:
-		#matches = directory + [fn for fn in os.listdir(directory) if fnmatch.fnmatch(fn, pattern)]
+		# matches = directory + [fn for fn in os.listdir(directory) if fnmatch.fnmatch(fn, pattern)]
 		for fn in os.listdir(directory):
 			if fnmatch.fnmatch(fn, pattern) and not os.path.isdir(fn):
 				matches.append(directory + "/" + fn)
