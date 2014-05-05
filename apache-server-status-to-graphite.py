@@ -71,7 +71,24 @@ def calc_metric_autostatus(url):
           stats['graceful_finishing'] = v
         elif k == "I":
           stats['idle_worker_cleanup'] = v
-
+    elif "BytesPerSec" in line: # XTENDED INFO
+      res = line.split(':')
+      stats[res[0]] = res[1]
+    elif "BytesPerReq" in line: # XTENDED INFO
+      res = line.split(':')
+      stats[res[0]] = res[1]
+    elif "ReqPerSec" in line: # XTENDED INFO
+      res = line.split(':')
+      stats[res[0]] = res[1]
+    elif "Uptime" in line: # XTENDED INFO
+      res = line.split(':')
+      stats[res[0]] = res[1]
+    elif "Total kBytes" in line: # XTENDED INFO
+      res = line.split(':')
+      stats['Total_kBytes'] = res[1]
+    elif "Total Accesses" in line: # XTENDED INFO
+      res = line.split(':')
+      stats['Total_Accesses'] = res[1]
   return stats
 def send_metric(name,value):
   """ Sends a metric to graphite over udp """
