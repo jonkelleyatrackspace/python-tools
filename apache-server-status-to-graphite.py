@@ -9,9 +9,9 @@ from collections import defaultdict # Metric Calc
 import socket, time # For graphite
 import re # For hostname hax 
 
-APPGROUP="cloudcontrol"
+APPGROUP="appname"
 STATUS_URL = 'https://' + socket.gethostname() + '/server-status'
-CARBON_SERVER = '10.69.246.19'
+CARBON_SERVER = 'graphite-host'
 CARBON_PORT = 2003
 
 def retrieve_page(stat_url):
