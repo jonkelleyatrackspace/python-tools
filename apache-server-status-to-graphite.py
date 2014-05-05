@@ -33,15 +33,15 @@ def calc_metric_autostatus(url):
   for line in status:
     linenum += 1
 
-    if linenum == 1: # BusyWorkers
+    if "BusyWorkers" in line: # BusyWorkers
       res = line.split(':')
       # Expose busyworker metric
       stats[res[0]] = res[1]
-    elif linenum == 2: # IdleWorkers
+    elif "IdleWorkers" in line: # IdleWorkers
       res = line.split(':')
       # Expose idleworker metric
       stats[res[0]] = res[1]
-    elif linenum == 3: # Scoreboard
+    elif "Scoreboard" in line: # Scoreboard
       res = line.split(':')
 
       # Put the scoreboard into a dictionary counter.
